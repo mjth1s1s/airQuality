@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AirQuality</string>
+    <string name="map_button_here">여기 미세먼지 농도 측정</string>
 </resources>
