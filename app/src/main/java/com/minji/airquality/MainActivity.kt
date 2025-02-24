@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         setRefreshButton()
         setFab()
     }
+
     private fun updateUI() {
         locationProvider = LocationProvider(this@MainActivity)
 
@@ -103,14 +104,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getAirQualityData(latitude: Double, longitude: Double) {
+        // retrofit api 객체 생성
         var retrofitAPI = RetrofitConnection.getInstance().create(
             AirQualityService::class.java
         )
+        // api 요청 실행
         retrofitAPI.getAirQualityData(
             latitude.toString(),
             longitude.toString(),
             "e7e9d20a-6437-430c-9e6d-420de797d5db"
-        ).enqueue(object : Callback<AirQualityResponse> {
+        ).enqueue(object : Callback<AirQualityResponse> {   // 비동기 네트워크 요청 수행
+            // 응답 성공
             override fun onResponse(
                 call: retrofit2.Call<AirQualityResponse>,
                 response: retrofit2.Response<AirQualityResponse>
@@ -126,7 +130,9 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }
+            // 응답 실패
             override fun onFailure(call: retrofit2.Call<AirQualityResponse>, t: Throwable) {
+                // 오류 원인을 로그로 출력
                 t.printStackTrace()
                 Toast.makeText(this@MainActivity, "데이터를 가져오는데 실패했습니다.", Toast.LENGTH_LONG)
                     .show()
@@ -138,6 +144,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateAirUI(airQualityData: AirQualityResponse) {
 
+        // 미세먼지 데이터 가져오기
         val pollutionData = airQualityData.data.current.pollution
 
         //수치를 지정
@@ -173,6 +180,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
     private fun setRefreshButton() {
         binding.btnRefresh.setOnClickListener {
             updateUI()
@@ -186,7 +194,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, MapActivity::class.java)
             intent.putExtra("currentLat", latitude)
             intent.putExtra("currentLng", longitude)
-            startMapActivityResult.launch(intent)
+            startMapActivityResult.launch(intent)   //ActivityResultLauncher<Intent> 객체
         }
     }
 
@@ -208,7 +216,6 @@ class MainActivity : AppCompatActivity() {
             return null
 
         }
-        Log.d("ADDRESS", "주소 데이터: ${addresses[0]}")
         return addresses[0]
     }
 
@@ -260,7 +267,6 @@ class MainActivity : AppCompatActivity() {
             if (checkResult) {
                 //위치 값을 가져올 수 있음
                 updateUI()
-
 
             } else {
                 Toast.makeText(this, "퍼미션이 거부되었습니다. 앱을 다시 실행하여 퍼미션을 허용해주세요.", Toast.LENGTH_LONG)
